@@ -58,7 +58,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
             keyboard.setSelective(true);
             keyboard.setOne_time_keyboard(true);            
             messageToSend.setReply_markup(keyboard);
-            messageToSend.setReply_to_message_id((int) (long) request.update.message().chat().id());
+            messageToSend.setReply_to_message_id(request.update.message().messageId());
                         
             json = gson.toJson(messageToSend, MessageToSend.class);
             System.out.println(json);
