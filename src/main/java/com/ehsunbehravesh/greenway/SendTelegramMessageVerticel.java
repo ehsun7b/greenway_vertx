@@ -56,7 +56,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
             
             ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(new String[] {"Download", "Cancel"});
             keyboard.setSelective(true);
-            keyboard.setOne_time_keyboard(true);
+            keyboard.setOne_time_keyboard(true);            
             messageToSend.setReply_markup(keyboard);
             messageToSend.setReply_to_message_id((int) (long) request.update.message().chat().id());
                         

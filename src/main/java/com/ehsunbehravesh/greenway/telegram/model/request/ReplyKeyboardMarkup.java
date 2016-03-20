@@ -60,6 +60,10 @@ public class ReplyKeyboardMarkup extends Keyboard {
     public void setSelective(boolean selective) {
         this.selective = selective;
     }
+
+    public String[][] getKeyboard() {
+        return keyboard;
+    }
     
     
 }
