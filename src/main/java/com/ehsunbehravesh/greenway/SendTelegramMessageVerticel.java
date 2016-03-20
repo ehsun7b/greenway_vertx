@@ -45,12 +45,12 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
             SendVideoProfileRequest request = gson.fromJson(json, SendVideoProfileRequest.class);
             MessageToSend messageToSend = new MessageToSend(request.update.message().chat().id());
             String text = "You sent a YouTube video:\n"
-                    + "\nTitle: <b>".concat(request.videoProfile.getTitle()) + "</b>\n"
-                    + "Duration: <b>".concat(request.videoProfile.getDuration()) + "</b>\n"
-                    + "Filename: <b>".concat(request.videoProfile.getFilename()) + "</b>\n"
-                    + "Thumbnail: <a href=\"" + request.videoProfile.getThumbnailUrl() + "\">".concat(request.videoProfile.getThumbnailUrl()) + "</b>\n";
+                    + "\nTitle: *".concat(request.videoProfile.getTitle()) + "*\n";
+                    //+ "Duration: <b>".concat(request.videoProfile.getDuration()) + "</b>\n"
+                    //+ "Filename: <b>".concat(request.videoProfile.getFilename()) + "</b>\n"
+                    //+ "Thumbnail: <a href=\"" + request.videoProfile.getThumbnailUrl() + "\">".concat(request.videoProfile.getThumbnailUrl()) + "</b>\n";
             messageToSend.setText(":)");
-            messageToSend.setParse_mode(ParseMode.HTML.name());
+            messageToSend.setParse_mode(ParseMode.Markdown.name());
                         
             json = gson.toJson(messageToSend, MessageToSend.class);
             System.out.println(json);
