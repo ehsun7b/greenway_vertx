@@ -56,11 +56,10 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                         
             json = gson.toJson(messageToSend, MessageToSend.class);
             
-            vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API, resp -> {
+            vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API + Constants.URL_SEND_MESSAGE, resp -> {
                 log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
                 resp.bodyHandler(body -> log.debug("Got data " + body.toString("UTF-8")));
-            }).putHeader(HttpHeaders.CONTENT_LENGTH, json.length() + "")
-                    .write(json).end();
+            }).putHeader(HttpHeaders.CONTENT_LENGTH, json.length() + "").write(json).end();
         });
     }
 
