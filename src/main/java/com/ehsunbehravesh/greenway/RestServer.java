@@ -40,6 +40,7 @@ public class RestServer extends AbstractVerticle {
         vertx.deployVerticle(new SendTelegramMessageVerticel());
         vertx.deployVerticle(new YouTubeGetInfoVerticle());
         vertx.deployVerticle(new YouTubeDownloadVideoVerticle());
+        vertx.deployVerticle(new AccessLogVerticle());
         //setUpInitialData();        
         Router router = Router.router(vertx);
 
@@ -74,6 +75,13 @@ public class RestServer extends AbstractVerticle {
         log.info("Hook request..." + routingContext.request().path() + " method: " + routingContext.request().method().name());
         //JsonObject updateJson = routingContext.getBodyAsJson();
         String json = routingContext.getBodyAsString();
+        
+        try {
+            vertx.eventBus().send(Constants.ADDR_LOG_ACCESS, json);
+        } catch (Exception ex) {
+            log.error("Access log failed", ex);
+        }
+        
         log.debug(json);
 
         Gson gson = new Gson();

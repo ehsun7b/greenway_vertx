@@ -10,6 +10,7 @@ public class Constants {
     public static String ADDR_YOUTUBE_DOWNLOAD_VIDEO = "com.ehsunbehravesh.greenway.address.youtube.download.video";
     public static String ADDR_YOUTUBE_GET_INFO = "com.ehsunbehravesh.greenway.address.youtube.info";
     public static String ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE = "com.ehsunbehravesh.greenway.address.telegram.message.video.profile.send";
+    public static String ADDR_LOG_ACCESS = "com.ehsunbehravesh.greenway.address.telegram.access.log";
     
     public static String HOST_API = "api.telegram.org";
     
