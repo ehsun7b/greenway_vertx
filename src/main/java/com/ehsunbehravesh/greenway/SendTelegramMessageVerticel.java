@@ -28,9 +28,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                     + message.body());
 
             String text = message.body().toString();
-            String apiUrl = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/sendMessage?chat_id=110303802&text=hello from greenway";
-
-            String messageJson = "{\"chat_id\": 110303802, \"text\": \"Hello from Green way. " + text + "\"}";
+            String apiUrl = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/sendMessage?chat_id=110303802&text=hello from greenway";            
 
             vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, "api.telegram.org", apiUrl, resp -> {
                 System.out.println("Got response " + resp.statusCode());
@@ -45,8 +43,8 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
             Gson gson = new Gson();
             
             SendVideoProfileRequest request = gson.fromJson(json, SendVideoProfileRequest.class);
-            System.out.println(request);
-            System.out.println(request.update);
+            //System.out.println(request);
+            //System.out.println(request.update);
             MessageToSend messageToSend = new MessageToSend(request.update.message().chat().id());
             String text = "You sent a YouTube video:\n"
                     + "\nTitle: <b>".concat(request.videoProfile.getTitle()) + "</b>\n"
@@ -58,10 +56,10 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                         
             json = gson.toJson(messageToSend, MessageToSend.class);
             
-            vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, Constants.HOST_API, Constants.URL_API, resp -> {
+            vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API, resp -> {
                 log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
                 resp.bodyHandler(body -> log.debug("Got data " + body.toString("UTF-8")));
-            });
+            }).write(json).end();
         });
     }
 
