@@ -44,6 +44,7 @@ public class YouTubeGetInfoVerticle extends AbstractVerticle {
                 YouTubeDl youTubeDl = new YouTubeDl();
                 try {
                     VideoProfile profile = youTubeDl.getProfile(youtubeUrl);
+                    System.out.println(profile.getTitle());
                     future.complete(profile);
                 } catch (IOException | InterruptedException ex) {
                     log.error("Error in getting video info, ".concat(youtubeUrl), ex);
