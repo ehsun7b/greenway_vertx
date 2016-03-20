@@ -21,7 +21,7 @@ public class YouTubeDl {
         VideoProfile result = new VideoProfile(url);
 
         Process proc = Runtime.getRuntime().exec("youtube-dl --get-id --get-title --get-thumbnail "
-                + "--get-duration --get-filename --get-format".concat(url));
+                + "--get-duration --get-filename --get-format ".concat(url));
 
         InputStream stdin = proc.getInputStream();
         InputStreamReader isr = new InputStreamReader(stdin);
