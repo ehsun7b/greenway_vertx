@@ -32,6 +32,7 @@ public class YouTubeGetInfoVerticle extends AbstractVerticle {
         log.info("YouTube get info request received.");
 
         try {
+            
             String json = message.body().toString();
             log.debug("YouTube get info request update json: " + json);
 
