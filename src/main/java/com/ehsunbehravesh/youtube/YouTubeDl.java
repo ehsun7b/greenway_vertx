@@ -49,7 +49,7 @@ public class YouTubeDl {
                     result.setThumbnailUrl(line);
                     break;
             }
-
+            System.out.println(line);
             log.debug("youtube-dl output line " + i + ": " + line);
         }
 
