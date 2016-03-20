@@ -49,7 +49,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                     //+ "Duration: <b>".concat(request.videoProfile.getDuration()) + "</b>\n"
                     //+ "Filename: <b>".concat(request.videoProfile.getFilename()) + "</b>\n"
                     //+ "Thumbnail: <a href=\"" + request.videoProfile.getThumbnailUrl() + "\">".concat(request.videoProfile.getThumbnailUrl()) + "</b>\n";
-            messageToSend.setText(":)");
+            messageToSend.setText(text);
             messageToSend.setParse_mode(ParseMode.Markdown.name());
                         
             json = gson.toJson(messageToSend, MessageToSend.class);
