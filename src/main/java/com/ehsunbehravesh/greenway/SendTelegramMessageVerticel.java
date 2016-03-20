@@ -41,7 +41,10 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
         vertx.eventBus().consumer(Constants.ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE, message -> {
             log.info("Send video profile to user request received");
 
-            SendVideoProfileRequest request = (SendVideoProfileRequest) message.body();
+            String json = message.body().toString();
+            Gson gson = new Gson();
+            
+            SendVideoProfileRequest request = gson.fromJson(json, SendVideoProfileRequest.class);
             MessageToSend messageToSend = new MessageToSend(request.update.message().chat().id());
             String text = "You sent a YouTube video:\n"
                     + "\nTitle: <b>".concat(request.videoProfile.getTitle()) + "</b>\n"
@@ -50,9 +53,8 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                     + "Thumbnail: <a href=\"" + request.videoProfile.getThumbnailUrl() + "\">".concat(request.videoProfile.getThumbnailUrl()) + "</b>\n";
             messageToSend.setText(text);
             messageToSend.setParse_mode(ParseMode.HTML.name());
-            
-            Gson gson = new Gson();
-            String json = gson.toJson(messageToSend, MessageToSend.class);
+                        
+            json = gson.toJson(messageToSend, MessageToSend.class);
             
             vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, Constants.HOST_API, Constants.URL_API, resp -> {
                 log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
