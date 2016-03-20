@@ -2,7 +2,9 @@ package com.ehsunbehravesh.greenway;
 
 import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.greenway.telegram.model.Update;
+import com.ehsunbehravesh.greenway.telegram.model.request.Keyboard;
 import com.ehsunbehravesh.greenway.telegram.model.request.ParseMode;
+import com.ehsunbehravesh.greenway.telegram.model.request.ReplyKeyboardMarkup;
 import com.ehsunbehravesh.greenway.telegram.model.request.x.MessageToSend;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
@@ -48,9 +50,15 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                     + "Title: *".concat(request.videoProfile.getTitle()) + "*\n"
                     + "Duration: *".concat(request.videoProfile.getDuration()) + "*\n"
                     + "Filename: *".concat(request.videoProfile.getFilename()) + "*\n"
-                    + "Thumbnail: [" + request.videoProfile.getThumbnailUrl() + "] (".concat(request.videoProfile.getThumbnailUrl()) + ")";
+                    + "Thumbnail: *" + request.videoProfile.getThumbnailUrl() + "*";
             messageToSend.setText(text);
             messageToSend.setParse_mode(ParseMode.Markdown.name());
+            
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(new String[] {"Download", "Cancel"});
+            keyboard.setSelective(true);
+            keyboard.setOne_time_keyboard(true);
+            messageToSend.setReply_markup(keyboard);
+            messageToSend.setReply_to_message_id((int) (long) request.update.message().chat().id());
                         
             json = gson.toJson(messageToSend, MessageToSend.class);
             System.out.println(json);
