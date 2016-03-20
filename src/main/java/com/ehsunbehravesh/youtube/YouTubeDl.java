@@ -50,7 +50,7 @@ public class YouTubeDl {
                     break;
             }
             
-            //System.out.println(line);
+            System.out.println(line);
             log.debug("youtube-dl output line " + i + ": " + line);
         }
 
