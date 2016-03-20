@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 public class YouTubeDl {
 
     private static final Logger log = LoggerFactory.getLogger(YouTubeDl.class);
-    
+
     public VideoProfile getProfile(String url) throws IOException, InterruptedException, YouTubeDlException {
         VideoProfile result = new VideoProfile(url);
 
@@ -46,20 +46,23 @@ public class YouTubeDl {
                     result.setFilename(line);
                     break;
                 case 5:
-                    result.setThumbnailUrl(line);
+                    result.setDuration(line);
+                    break;
+                case 6:
+                    result.setFormat(line);
                     break;
             }
-            
-            System.out.println(line);
+
+            //System.out.println(line);
             log.debug("youtube-dl output line " + i + ": " + line);
         }
 
         int exitVal = proc.waitFor();
-        
+
         if (exitVal != 0) {
             throw new YouTubeDlException("youtube-dl exit code: " + exitVal);
         }
-        
+
         log.info("youtube-dl exit code: " + exitVal);
 
         return result;
