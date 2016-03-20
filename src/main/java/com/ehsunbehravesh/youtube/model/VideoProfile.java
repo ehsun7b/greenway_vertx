@@ -53,6 +53,11 @@ public class VideoProfile implements Serializable {
      */
     protected String filename;
 
+    @Override
+    public String toString() {
+        return "VideoProfile{" + "id=" + id + ", title=" + title + ", thumbnailUrl=" + thumbnailUrl + ", thumbnailFile=" + thumbnailFile + ", url=" + url + ", duration=" + duration + ", description=" + description + ", format=" + format + ", filename=" + filename + '}';
+    }    
+    
     public VideoProfile(String url) {
         this.url = url;
     }

@@ -3,6 +3,7 @@ package com.ehsunbehravesh.greenway;
 import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.greenway.telegram.model.Update;
 import com.ehsunbehravesh.youtube.YouTubeDl;
+import com.ehsunbehravesh.youtube.YouTubeDlException;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
 import io.vertx.core.AbstractVerticle;
@@ -46,7 +47,7 @@ public class YouTubeGetInfoVerticle extends AbstractVerticle {
                     VideoProfile profile = youTubeDl.getProfile(youtubeUrl);
                     System.out.println(profile.getTitle());
                     future.complete(profile);
-                } catch (IOException | InterruptedException ex) {
+                } catch (IOException | InterruptedException | YouTubeDlException ex) {
                     log.error("Error in getting video info, ".concat(youtubeUrl), ex);
                     future.fail(ex);
                 } 

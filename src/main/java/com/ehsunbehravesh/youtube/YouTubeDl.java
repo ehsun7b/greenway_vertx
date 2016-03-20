@@ -17,7 +17,7 @@ public class YouTubeDl {
 
     private static final Logger log = LoggerFactory.getLogger(YouTubeDl.class);
     
-    public VideoProfile getProfile(String url) throws IOException, InterruptedException {
+    public VideoProfile getProfile(String url) throws IOException, InterruptedException, YouTubeDlException {
         VideoProfile result = new VideoProfile(url);
 
         Process proc = Runtime.getRuntime().exec("youtube-dl --get-id --get-title --get-thumbnail "
@@ -49,11 +49,17 @@ public class YouTubeDl {
                     result.setThumbnailUrl(line);
                     break;
             }
-            System.out.println(line);
+            
+            //System.out.println(line);
             log.debug("youtube-dl output line " + i + ": " + line);
         }
 
         int exitVal = proc.waitFor();
+        
+        if (exitVal != 0) {
+            throw new YouTubeDlException("youtube-dl exit code: " + exitVal);
+        }
+        
         log.info("youtube-dl exit code: " + exitVal);
 
         return result;
