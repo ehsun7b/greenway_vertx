@@ -26,11 +26,9 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
     public void start(Future<Void> startFuture) {
 
         vertx.eventBus().consumer(Constants.ADDR_SEND_TELEGRAM_MESSAGE, message -> {
-            System.out.println("1 received message.body() = "
-                    + message.body());
 
             String text = message.body().toString();
-            String apiUrl = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/sendMessage?chat_id=110303802&text=hello from greenway";            
+            String apiUrl = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/sendMessage?chat_id=110303802&text=" + text;            
 
             vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, "api.telegram.org", apiUrl, resp -> {
                 System.out.println("Got response " + resp.statusCode());

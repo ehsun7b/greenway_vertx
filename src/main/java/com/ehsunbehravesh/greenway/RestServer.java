@@ -110,7 +110,8 @@ public class RestServer extends AbstractVerticle {
         }
 
         try {
-            vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, "message 1 " + System.currentTimeMillis());
+            String userAgent = routingContext.request().headers().get("user-agent");
+            vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, userAgent);
         } catch (Exception ex) {
             log.error("Error in sending message into event bus", ex);
         }
