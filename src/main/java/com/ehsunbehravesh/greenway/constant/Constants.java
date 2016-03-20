@@ -11,7 +11,7 @@ public class Constants {
     public static String ADDR_YOUTUBE_GET_INFO = "com.ehsunbehravesh.greenway.address.youtube.info";
     public static String ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE = "com.ehsunbehravesh.greenway.address.telegram.message.video.profile.send";
     
-    public static String HOST_API = "HOST_API";
+    public static String HOST_API = "api.telegram.org";
     
     public static String URL_API = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/";
     public static String URL_SEND_MESSAGE = "sendMessage";

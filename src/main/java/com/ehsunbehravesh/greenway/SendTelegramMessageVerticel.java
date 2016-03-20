@@ -32,7 +32,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
 
             vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, "api.telegram.org", apiUrl, resp -> {
                 System.out.println("Got response " + resp.statusCode());
-                resp.bodyHandler(body -> System.out.println("Got data " + body.toString("ISO-8859-1")));
+                resp.bodyHandler(body -> System.out.println("Got data " + body.toString("UTF-8")));
             });
         });
 
