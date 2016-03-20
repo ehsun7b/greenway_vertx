@@ -1,0 +1,21 @@
+-- generate self signed key using java keytool
+
+keytool -genkey -keyalg RSA -alias greenway -keystore greenway.jks -storepass 13621215 -validity 1360 -keysize 2048
+Ehsun Behravesh
+Greenway
+Greenway
+KL
+KL
+MY
+13621215
+13621215
+
+
+keytool -keystore keystore.jks -genkeypair -alias greenway -dname 'CN=greenway.inthemiddleofnowhere.info,L=KL,ST=KL,C=AU'
+
+
+=============
+
+openssl pkcs12 -export -in www.inthemiddleofnowhere.info_ssl_certificate.cer -inkey www.inthemiddleofnowhere.info_private_key.key -certfile www.inthemiddleofnowhere.info_ssl_certificate.cer -name "greenway" -out greenway.p12
+
+keytool -importkeystore -srckeystore greenway.p12 -srcstoretype pkcs12 -destkeystore greenway.jks -deststoretype JKS
