@@ -28,11 +28,10 @@ public class YouTubeGetInfoVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(Constants.ADDR_YOUTUBE_GET_INFO, this::handleMessage);
     }
     
-    private void handleMessage(Message<Update> message) {
+    private void handleMessage(Message<Object> message) {
         log.info("YouTube get info request received.");
 
-        try {
-            
+        try {            
             String json = message.body().toString();
             log.debug("YouTube get info request update json: " + json);
 

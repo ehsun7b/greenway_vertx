@@ -29,10 +29,10 @@ public class YouTubeDownloadVideoVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(Constants.ADDR_YOUTUBE_DOWNLOAD_VIDEO, this::handleMessage);
     }
 
-    private void handleMessage(Message<Update> message) {
+    private void handleMessage(Message<Object> message) {
         log.info("YouTube download request received.");
 
-        try {
+        try {/*
             Update update = message.body();
             log.debug("YouTube download request update: " + update);
 
@@ -59,7 +59,7 @@ public class YouTubeDownloadVideoVerticle extends AbstractVerticle {
 
             }, result -> {
 
-            });
+            });*/
         } catch (NullPointerException ex) {
             log.error(ex.getMessage(), ex);
         }
