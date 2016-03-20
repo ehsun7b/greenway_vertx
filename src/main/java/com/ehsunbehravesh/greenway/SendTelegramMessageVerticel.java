@@ -65,7 +65,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
         });
     }
 
-    public class SendVideoProfileRequest {
+    public static class SendVideoProfileRequest {
 
         protected final Update update;
         protected final VideoProfile videoProfile;

@@ -53,8 +53,9 @@ public class YouTubeGetInfoVerticle extends AbstractVerticle {
             }, result -> {
                 if (result.succeeded()) {
                     VideoProfile videoProfile = (VideoProfile) result.result();
-                    String jsonVideoProfile = gson.toJson(videoProfile);
-                    vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE, jsonVideoProfile);
+                    SendTelegramMessageVerticel.SendVideoProfileRequest sendVideoProfileRequest = new SendTelegramMessageVerticel.SendVideoProfileRequest(update, videoProfile);
+                    String jsonRequest = gson.toJson(sendVideoProfileRequest);
+                    vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE, jsonRequest);
                 }
             });
         } catch (NullPointerException ex) {
