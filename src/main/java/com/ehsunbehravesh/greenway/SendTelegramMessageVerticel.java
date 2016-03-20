@@ -43,8 +43,9 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
             Gson gson = new Gson();
             
             SendVideoProfileRequest request = gson.fromJson(json, SendVideoProfileRequest.class);
-            //System.out.println(request);
-            //System.out.println(request.update);
+            System.out.println("--------");
+            System.out.println(request.videoProfile);
+            System.out.println(request.update);
             MessageToSend messageToSend = new MessageToSend(request.update.message().chat().id());
             String text = "You sent a YouTube video:\n"
                     + "\nTitle: <b>".concat(request.videoProfile.getTitle()) + "</b>\n"
