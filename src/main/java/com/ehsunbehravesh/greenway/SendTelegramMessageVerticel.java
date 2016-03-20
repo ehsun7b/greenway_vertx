@@ -8,7 +8,9 @@ import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import static io.vertx.core.buffer.Buffer.buffer;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
@@ -57,7 +59,8 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
             vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API, resp -> {
                 log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
                 resp.bodyHandler(body -> log.debug("Got data " + body.toString("UTF-8")));
-            }).write(json).end();
+            }).putHeader(HttpHeaders.CONTENT_LENGTH, json.length() + "")
+                    .write(json).end();
         });
     }
 
