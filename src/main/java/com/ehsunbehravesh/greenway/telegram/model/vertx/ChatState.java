@@ -4,18 +4,25 @@ package com.ehsunbehravesh.greenway.telegram.model.vertx;
  *
  * @author ehsun7b
  */
-public class SaveChatStateRequest {
+public class ChatState {
+    
     protected final Long chatId;
     protected final String state;
     protected final String json;
 
-    public SaveChatStateRequest(Long chatId, String state) {
+    public ChatState(Long chatId) {
+        this.chatId = chatId;
+        this.state = null;
+        this.json = null;
+    }
+
+    public ChatState(Long chatId, String state) {
         this.chatId = chatId;
         this.state = state;
         this.json = null;
     }
 
-    public SaveChatStateRequest(Long chatId, String state, String json) {
+    public ChatState(Long chatId, String state, String json) {
         this.chatId = chatId;
         this.state = state;
         this.json = json;
@@ -32,6 +39,5 @@ public class SaveChatStateRequest {
     public String getJson() {
         return json;
     }
-    
-    
+
 }

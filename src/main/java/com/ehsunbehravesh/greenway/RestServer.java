@@ -1,11 +1,17 @@
 package com.ehsunbehravesh.greenway;
 
+import com.ehsunbehravesh.greenway.config.DatabaseConfig;
 import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.greenway.telegram.model.Update;
 import com.ehsunbehravesh.greenway.resource.FileResource;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.ChatState;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.utils.Utils;
+import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
@@ -14,6 +20,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.JksOptions;
+import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -30,7 +37,7 @@ public class RestServer extends AbstractVerticle {
 
     private static final Logger log = LoggerFactory.getLogger(RestServer.class);
     private static final String HTTP_PORT_VARIABLE = "GREENWAY_HTTP_PORT";
-    private static final String HTTPS_PORT_VARIABLE = "GREENWAY_HTTPS_PORT";    
+    private static final String HTTPS_PORT_VARIABLE = "GREENWAY_HTTPS_PORT";
     private static final String KEY_STORE_VARIABLE = "GREENWAY_KEY_STORE";
 
     private Map<String, JsonObject> products = new HashMap<>();
@@ -70,19 +77,54 @@ public class RestServer extends AbstractVerticle {
             log.info("SSL keystore NOT found! ".concat(KEY_STORE_VARIABLE));
         }
 
+        
+        vertx.eventBus().consumer(Constants.ADDR_LOAD_TELEGRAM_CHAT_STATE_RESULT, this::handleLoadStateResultMessage);
     }
 
+    private void handleLoadStateResultMessage(Message<Object> message) {
+        log.info("Load telegram chat state result received.");
+
+        try {
+            String json = message.body().toString();
+            log.debug("Load telegram chat state result json: " + json);
+
+            Gson gson = new Gson();
+            ChatState state = gson.fromJson(json, ChatState.class);
+            
+            if (state.getState().equalsIgnoreCase(Constants.STATE_TELEGRAM_CHAT_SENT_YOUTUBE_LINK)) {
+                
+                log.info("Sending video download for chat id: " + state.getChatId() + " url: \n" + state.getJson() + "\n");
+                                
+                try {
+                    String jsonVideoProfile = state.getJson();
+                    VideoProfile videoProfile = gson.fromJson(jsonVideoProfile, VideoProfile.class);
+                    DownloadVideoRequest downloadVideoRequest = new DownloadVideoRequest(state.getChatId(), videoProfile);
+                    
+                    String jsonToBeSent = gson.toJson(downloadVideoRequest);
+                    
+                    vertx.eventBus().send(Constants.ADDR_YOUTUBE_DOWNLOAD_VIDEO, jsonToBeSent);
+                } catch (JsonSyntaxException ex) {
+                    log.error("Error in parsing video profile json in state", ex);
+                } catch (Exception ex) {
+                    log.error("Error in sending message into event bus", ex);
+                }
+            }
+        } catch (NullPointerException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+    }
+    
     private void handleHook(RoutingContext routingContext) {
         log.info("Hook request..." + routingContext.request().path() + " method: " + routingContext.request().method().name());
         //JsonObject updateJson = routingContext.getBodyAsJson();
         String json = routingContext.getBodyAsString();
-        
+
         try {
             vertx.eventBus().send(Constants.ADDR_LOG_ACCESS, json);
         } catch (Exception ex) {
             log.error("Access log failed", ex);
         }
-        
+
         log.debug(json);
 
         Gson gson = new Gson();
@@ -90,13 +132,25 @@ public class RestServer extends AbstractVerticle {
 
         log.debug("update: " + update);
 
-        if (update.message() != null && update.message().text() != null && Utils.isYouTubeLink(update.message().text())) {
-            log.info("Youtube link received: " + update.message().text());
+        if (update.message() != null && update.message().text() != null) {
+            if (Utils.isYouTubeLink(update.message().text())) {
+                log.info("Youtube link received: " + update.message().text());
 
-            try {
-                vertx.eventBus().send(Constants.ADDR_YOUTUBE_GET_INFO, json);
-            } catch (Exception ex) {
-                log.error("Error in sending message into event bus", ex);
+                try {
+                    vertx.eventBus().send(Constants.ADDR_YOUTUBE_GET_INFO, json);
+                } catch (Exception ex) {
+                    log.error("Error in sending message into event bus", ex);
+                }
+            } else if (Utils.isDownloadCommand(update.message().text())) {
+                log.info("Download command received: " + update.message().text());
+
+                ChatState stateRequest = new ChatState(update.message().chat().id());
+                String jsonRequest = gson.toJson(stateRequest);
+                try {
+                    vertx.eventBus().send(Constants.ADDR_LOAD_TELEGRAM_CHAT_STATE, jsonRequest);
+                } catch (Exception ex) {
+                    log.error("Error in sending message into event bus", ex);
+                }
             }
         }
 

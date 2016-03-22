@@ -1,5 +1,7 @@
 package com.ehsunbehravesh.greenway.telegram.utils;
 
+import com.ehsunbehravesh.greenway.GreenWayBot;
+import com.ehsunbehravesh.greenway.constant.Constants;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import java.util.regex.Matcher;
@@ -27,4 +29,15 @@ public class Utils {
 
         return false;
     }    
+    
+    public static boolean isDownloadCommand(String text) {
+        if (text != null && text.trim().length() > 10) {
+            if (text.equalsIgnoreCase(Constants.CMD_DOWNLOAD) ||
+                    text.equalsIgnoreCase(Constants.CMD_DOWNLOAD.concat(GreenWayBot.BOT_TAG))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

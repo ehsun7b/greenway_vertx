@@ -1,10 +1,12 @@
 package com.ehsunbehravesh.youtube;
 
 import com.ehsunbehravesh.greenway.YouTubeGetInfoVerticle;
+import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,6 +18,11 @@ import java.io.InputStreamReader;
 public class YouTubeDl {
 
     private static final Logger log = LoggerFactory.getLogger(YouTubeDl.class);
+    private static final String VIDEO_DIR;    
+    
+    static {
+        VIDEO_DIR = System.getenv(Constants.VAR_VIDEO_DIR);
+    }
 
     public VideoProfile getProfile(String url) throws IOException, InterruptedException, YouTubeDlException {
         VideoProfile result = new VideoProfile(url);
@@ -66,5 +73,25 @@ public class YouTubeDl {
         log.info("youtube-dl exit code: " + exitVal);
 
         return result;
+    }
+    
+    public void download(VideoProfile videoProfile) {
+        if (videoExists(videoProfile)) {
+            log.info("The video is already existing. ID: " + videoProfile.getId());
+        } else {
+            log.info("The video does NOT exist. ID: " + videoProfile.getId());
+        }
+    } 
+
+    private boolean videoExists(VideoProfile videoProfile) {
+        File dir = new File(VIDEO_DIR.concat(videoProfile.getId()));
+        
+        if (dir.exists() && dir.isDirectory()) {
+            File video = new File(dir, videoProfile.getFilename());
+            
+            return video.exists() && video.isFile();
+        }
+        
+        return false;
     }
 }

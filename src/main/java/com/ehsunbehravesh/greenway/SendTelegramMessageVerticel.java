@@ -5,7 +5,7 @@ import com.ehsunbehravesh.greenway.telegram.model.Update;
 import com.ehsunbehravesh.greenway.telegram.model.request.ParseMode;
 import com.ehsunbehravesh.greenway.telegram.model.request.ReplyKeyboardMarkup;
 import com.ehsunbehravesh.greenway.telegram.model.request.x.MessageToSend;
-import com.ehsunbehravesh.greenway.telegram.model.vertx.SaveChatStateRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.ChatState;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoProfileRequest;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
@@ -71,7 +71,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                 if (resp.statusCode() == 200) {
                     VideoProfile videoProfile = request.getVideoProfile();
                     String requestJson = gson.toJson(videoProfile);
-                    SaveChatStateRequest stateRequest = new SaveChatStateRequest(request.getUpdate().message().chat().id(), Constants.STATE_TELEGRAM_CHAT_SENT_YOUTUBE_LINK, requestJson);
+                    ChatState stateRequest = new ChatState(request.getUpdate().message().chat().id(), Constants.STATE_TELEGRAM_CHAT_SENT_YOUTUBE_LINK, requestJson);
                     requestJson = gson.toJson(stateRequest);
                     
                     vertx.eventBus().send(Constants.ADDR_SAVE_TELEGRAM_CHAT_STATE, requestJson);
