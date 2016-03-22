@@ -2,15 +2,15 @@ package com.ehsunbehravesh.greenway;
 
 import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.greenway.telegram.model.Update;
-import com.ehsunbehravesh.greenway.telegram.model.request.Keyboard;
 import com.ehsunbehravesh.greenway.telegram.model.request.ParseMode;
 import com.ehsunbehravesh.greenway.telegram.model.request.ReplyKeyboardMarkup;
 import com.ehsunbehravesh.greenway.telegram.model.request.x.MessageToSend;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SaveChatStateRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoProfileRequest;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import static io.vertx.core.buffer.Buffer.buffer;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.logging.Logger;
@@ -29,13 +29,15 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
 
         vertx.eventBus().consumer(Constants.ADDR_SEND_TELEGRAM_MESSAGE, message -> {
 
-            String text = message.body().toString();
-            String apiUrl = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/sendMessage?chat_id=110303802&text=" + text;            
+            if (message != null && message.body() != null) {
+                String text = message.body().toString();
+                String apiUrl = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/sendMessage?chat_id=110303802&text=" + text;
 
-            vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, "api.telegram.org", apiUrl, resp -> {
-                System.out.println("Got response " + resp.statusCode());
-                resp.bodyHandler(body -> System.out.println("Got data " + body.toString("UTF-8")));
-            });
+                vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, "api.telegram.org", apiUrl, resp -> {
+                    System.out.println("Got response " + resp.statusCode());
+                    resp.bodyHandler(body -> System.out.println("Got data " + body.toString("UTF-8")));
+                });
+            }
         });
 
         vertx.eventBus().consumer(Constants.ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE, message -> {
@@ -43,51 +45,40 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
 
             String json = message.body().toString();
             Gson gson = new Gson();
-            
+
             SendVideoProfileRequest request = gson.fromJson(json, SendVideoProfileRequest.class);
-            MessageToSend messageToSend = new MessageToSend(request.update.message().chat().id());
+            MessageToSend messageToSend = new MessageToSend(request.getUpdate().message().chat().id());
             String text = "You sent a YouTube video:\n"
-                    + "Title: *".concat(request.videoProfile.getTitle()) + "*\n"
-                    + "Duration: *".concat(request.videoProfile.getDuration()) + "*\n"
-                    + "Filename: *".concat(request.videoProfile.getFilename()) + "*\n"
-                    + "Thumbnail: *" + request.videoProfile.getThumbnailUrl() + "*";
+                    + "Title: *".concat(request.getVideoProfile().getTitle()) + "*\n"
+                    + "Duration: *".concat(request.getVideoProfile().getDuration()) + "*\n"
+                    + "Filename: *".concat(request.getVideoProfile().getFilename()) + "*\n"
+                    + "Thumbnail: *" + request.getVideoProfile().getThumbnailUrl() + "*";
             messageToSend.setText(text);
             messageToSend.setParse_mode(ParseMode.Markdown.name());
-            
-            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(new String[] {"Download", "Cancel"});
+
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(new String[]{"Download", "Cancel"});
             keyboard.setSelective(true);
-            keyboard.setOne_time_keyboard(true);            
+            keyboard.setOne_time_keyboard(true);
             messageToSend.setReply_markup(keyboard);
-            messageToSend.setReply_to_message_id(request.update.message().messageId());
-                        
+            messageToSend.setReply_to_message_id(request.getUpdate().message().messageId());
+
             json = gson.toJson(messageToSend, MessageToSend.class);
             System.out.println(json);
             vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API + Constants.URL_SEND_MESSAGE, resp -> {
                 log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
                 resp.bodyHandler(body -> log.info("Got data " + body.toString("UTF-8")));
+                
+                if (resp.statusCode() == 200) {
+                    VideoProfile videoProfile = request.getVideoProfile();
+                    String requestJson = gson.toJson(videoProfile);
+                    SaveChatStateRequest stateRequest = new SaveChatStateRequest(request.getUpdate().message().chat().id(), Constants.STATE_TELEGRAM_CHAT_SENT_YOUTUBE_LINK, requestJson);
+                    requestJson = gson.toJson(stateRequest);
+                    
+                    vertx.eventBus().send(Constants.ADDR_SAVE_TELEGRAM_CHAT_STATE, requestJson);
+                }
             }).putHeader(HttpHeaders.CONTENT_LENGTH, json.length() + "")
                     .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                     .write(json).end();
         });
-    }
-
-    public static class SendVideoProfileRequest {
-
-        protected final Update update;
-        protected final VideoProfile videoProfile;
-
-        public SendVideoProfileRequest(Update update, VideoProfile videoProfile) {
-            this.update = update;
-            this.videoProfile = videoProfile;
-        }
-
-        public Update getUpdate() {
-            return update;
-        }
-
-        public VideoProfile getVideoProfile() {
-            return videoProfile;
-        }
-
     }
 }

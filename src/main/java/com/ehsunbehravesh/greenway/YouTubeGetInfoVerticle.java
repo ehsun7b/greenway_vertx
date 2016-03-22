@@ -2,6 +2,7 @@ package com.ehsunbehravesh.greenway;
 
 import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.greenway.telegram.model.Update;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoProfileRequest;
 import com.ehsunbehravesh.youtube.YouTubeDl;
 import com.ehsunbehravesh.youtube.YouTubeDlException;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
@@ -55,7 +56,7 @@ public class YouTubeGetInfoVerticle extends AbstractVerticle {
             }, result -> {
                 if (result.succeeded()) {
                     VideoProfile videoProfile = (VideoProfile) result.result();
-                    SendTelegramMessageVerticel.SendVideoProfileRequest sendVideoProfileRequest = new SendTelegramMessageVerticel.SendVideoProfileRequest(update, videoProfile);
+                    SendVideoProfileRequest sendVideoProfileRequest = new SendVideoProfileRequest(update, videoProfile);
                     String jsonRequest = gson.toJson(sendVideoProfileRequest);
                     vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE, jsonRequest);
                 }

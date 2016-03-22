@@ -41,6 +41,7 @@ public class RestServer extends AbstractVerticle {
         vertx.deployVerticle(new YouTubeGetInfoVerticle());
         vertx.deployVerticle(new YouTubeDownloadVideoVerticle());
         vertx.deployVerticle(new AccessLogVerticle());
+        vertx.deployVerticle(new TelegramChatStateVerticle());
         //setUpInitialData();        
         Router router = Router.router(vertx);
 
