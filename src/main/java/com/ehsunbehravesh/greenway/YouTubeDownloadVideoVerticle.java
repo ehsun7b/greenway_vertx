@@ -47,27 +47,27 @@ public class YouTubeDownloadVideoVerticle extends AbstractVerticle {
             Gson gson = new Gson();
             DownloadVideoRequest downloadRequest = gson.fromJson(json, DownloadVideoRequest.class);
 
-            vertx.executeBlocking(future -> {
-                String youtubeUrl = downloadRequest.getVideoProfile().getUrl();
-
+            vertx.executeBlocking(future -> {                
                 YouTubeDl youTubeDl = new YouTubeDl();
+                VideoProfile videoProfile = downloadRequest.getVideoProfile();
                 try {
-                    VideoProfile profile = youTubeDl.getProfile(youtubeUrl);
-                    System.out.println(profile.getTitle());
-                    future.complete(profile);
-                } catch (IOException | InterruptedException | YouTubeDlException ex) {
-                    log.error("Error in getting video info, ".concat(youtubeUrl), ex);
+                    youTubeDl.download(videoProfile);
+                    
+                    future.complete();
+                } catch (Exception ex) {
+                    log.error("Error in downloading video, ".concat(videoProfile.getUrl()), ex);
                     future.fail(ex);
                 }
 
             }, result -> {
+                /*
                 if (result.succeeded()) {
                     VideoProfile videoProfile = (VideoProfile) result.result();
                     SendVideoProfileRequest sendVideoProfileRequest = new SendVideoProfileRequest(update, videoProfile);
                     String jsonRequest = gson.toJson(sendVideoProfileRequest);
                     vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE, jsonRequest);
-                }
-            });ˆ
+                }*/
+            });
         } catch (NullPointerException ex) {
             log.error(ex.getMessage(), ex);
         }
