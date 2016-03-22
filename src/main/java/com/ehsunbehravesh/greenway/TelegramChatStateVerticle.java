@@ -40,7 +40,7 @@ public class TelegramChatStateVerticle extends AbstractVerticle {
 
             client.getConnection(hndlr -> {
                 if (hndlr.succeeded()) {
-                    String sql = "INSERT INTO `tbl_chat_state` (chat_id, state, json) values(?, ?)";
+                    String sql = "INSERT INTO `tbl_chat_state` (chat_id, state, json) values(?, ?, ?)";
                     JsonArray params = new JsonArray();
                     params.add(request.getChatId());
                     params.add(request.getState());
