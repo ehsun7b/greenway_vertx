@@ -31,7 +31,7 @@ public class Utils {
     }    
     
     public static boolean isDownloadCommand(String text) {
-        if (text != null && text.trim().length() > 10) {
+        if (text != null && text.trim().length() > 0) {
             if (text.equalsIgnoreCase(Constants.CMD_DOWNLOAD) ||
                     text.equalsIgnoreCase(Constants.CMD_DOWNLOAD.concat(GreenWayBot.BOT_TAG))) {
                 return true;

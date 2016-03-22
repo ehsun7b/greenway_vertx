@@ -1,6 +1,5 @@
 package com.ehsunbehravesh.greenway;
 
-import com.ehsunbehravesh.greenway.config.DatabaseConfig;
 import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.greenway.telegram.model.Update;
 import com.ehsunbehravesh.greenway.resource.FileResource;
@@ -20,7 +19,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.JksOptions;
-import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;

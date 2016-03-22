@@ -1,28 +1,15 @@
 package com.ehsunbehravesh.greenway;
 
-import com.ehsunbehravesh.greenway.config.DatabaseConfig;
 import com.ehsunbehravesh.greenway.constant.Constants;
-import com.ehsunbehravesh.greenway.telegram.model.Update;
-import com.ehsunbehravesh.greenway.telegram.model.vertx.ChatState;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
-import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoProfileRequest;
 import com.ehsunbehravesh.youtube.YouTubeDl;
-import com.ehsunbehravesh.youtube.YouTubeDlException;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.jdbc.JDBCClient;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  *
