@@ -13,3 +13,12 @@ CREATE TABLE tbl_chat_state (
      `time` timestamp NOT NULL,
      primary key (id)
 );
+
+CREATE TABLE tbl_youtube_video (
+     `id` VARCHAR(255) NOT NULL,     
+     `url` VARCHAR(255) NOT NULL,
+     `filename` VARCHAR(255),
+     `file_id` VARCHAR(255),
+     `time` timestamp NOT NULL,
+     primary key (id)
+);

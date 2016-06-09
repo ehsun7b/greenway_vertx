@@ -2,6 +2,8 @@ package com.ehsunbehravesh.greenway;
 
 import com.ehsunbehravesh.greenway.constant.Constants;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.LoadVideoRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoRequest;
 import com.ehsunbehravesh.youtube.YouTubeDl;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
@@ -33,27 +35,32 @@ public class YouTubeDownloadVideoVerticle extends AbstractVerticle {
 
             Gson gson = new Gson();
             DownloadVideoRequest downloadRequest = gson.fromJson(json, DownloadVideoRequest.class);
-
+            VideoProfile videoProfile = downloadRequest.getVideoProfile();
+            
             vertx.executeBlocking(future -> {                
                 YouTubeDl youTubeDl = new YouTubeDl();
-                VideoProfile videoProfile = downloadRequest.getVideoProfile();
+                
                 try {
                     youTubeDl.download(videoProfile);
                     
-                    future.complete();
+                    future.complete();                    
                 } catch (Exception ex) {
                     log.error("Error in downloading video, ".concat(videoProfile.getUrl()), ex);
                     future.fail(ex);
                 }
 
             }, result -> {
-                /*
-                if (result.succeeded()) {
-                    VideoProfile videoProfile = (VideoProfile) result.result();
-                    SendVideoProfileRequest sendVideoProfileRequest = new SendVideoProfileRequest(update, videoProfile);
-                    String jsonRequest = gson.toJson(sendVideoProfileRequest);
-                    vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_PROFILE_AS_TELEGRAM_MESSAGE, jsonRequest);
-                }*/
+                
+                if (result.succeeded()) {                                        
+                    SendVideoRequest sendVideoRequest = new SendVideoRequest(downloadRequest.getVideoProfile(), downloadRequest.getChatId());
+                    
+                    String sendVideoJson = gson.toJson(sendVideoRequest);
+                    vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_AS_TELEGRAM_MESSAGE, sendVideoJson);
+                    
+                    LoadVideoRequest loadVideoRequest = new LoadVideoRequest(downloadRequest.getVideoProfile(), downloadRequest.getChatId());
+                    String loadVideoJson = gson.toJson(loadVideoRequest);
+                    vertx.eventBus().send(Constants.ADDR_YOUTUBE_VIDEO_SAVE, loadVideoJson);
+                }
             });
         } catch (NullPointerException ex) {
             log.error(ex.getMessage(), ex);

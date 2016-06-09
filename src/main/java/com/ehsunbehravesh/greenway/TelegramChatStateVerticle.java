@@ -110,7 +110,7 @@ public class TelegramChatStateVerticle extends AbstractVerticle {
                         }
                     });
                 } else {
-                    System.out.println(hndlr.cause().getMessage());
+                    log.error(hndlr.cause().getMessage());
                 }
             });
 

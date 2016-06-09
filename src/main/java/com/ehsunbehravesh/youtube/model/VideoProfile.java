@@ -52,11 +52,24 @@ public class VideoProfile implements Serializable {
      * Original file name
      */
     protected String filename;
+    
+    /**
+     * File ID on Telegram servers
+     */
+    protected String fileId;
 
     @Override
     public String toString() {
-        return "VideoProfile{" + "id=" + id + ", title=" + title + ", thumbnailUrl=" + thumbnailUrl + ", thumbnailFile=" + thumbnailFile + ", url=" + url + ", duration=" + duration + ", description=" + description + ", format=" + format + ", filename=" + filename + '}';
-    }    
+        return "VideoProfile{" + "id=" + id + ", title=" + title + ", thumbnailUrl=" + thumbnailUrl + ", thumbnailFile=" + thumbnailFile + ", url=" + url + ", duration=" + duration + ", description=" + description + ", format=" + format + ", filename=" + filename + ", fileId=" + fileId + '}';
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
     
     public VideoProfile(String url) {
         this.url = url;

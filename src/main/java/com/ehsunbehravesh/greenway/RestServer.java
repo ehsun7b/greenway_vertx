@@ -5,6 +5,8 @@ import com.ehsunbehravesh.greenway.telegram.model.Update;
 import com.ehsunbehravesh.greenway.resource.FileResource;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.ChatState;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.LoadVideoRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.utils.Utils;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
@@ -14,7 +16,6 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -43,17 +44,14 @@ public class RestServer extends AbstractVerticle {
     @Override
     public void start() {
         vertx.deployVerticle(new SendTelegramMessageVerticel());
-        vertx.deployVerticle(new YouTubeGetInfoVerticle());
-        vertx.deployVerticle(new YouTubeDownloadVideoVerticle());
+        //vertx.deployVerticle(new YouTubeGetInfoVerticle());
+        //vertx.deployVerticle(new YouTubeDownloadVideoVerticle());
         vertx.deployVerticle(new AccessLogVerticle());
         vertx.deployVerticle(new TelegramChatStateVerticle());
-        //setUpInitialData();        
+
         Router router = Router.router(vertx);
 
-        router.route().handler(BodyHandler.create());
-        router.get("/products/:productID").handler(this::handleGetProduct);
-        router.put("/products/:productID").handler(this::handleAddProduct);
-        router.get("/products").handler(this::handleListProducts);
+        router.route().handler(BodyHandler.create()); 
         router.route("/").handler(this::handleRoot);
         router.route("/196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I").handler(this::handleHook);
 
@@ -75,8 +73,69 @@ public class RestServer extends AbstractVerticle {
             log.info("SSL keystore NOT found! ".concat(KEY_STORE_VARIABLE));
         }
 
-        
         vertx.eventBus().consumer(Constants.ADDR_LOAD_TELEGRAM_CHAT_STATE_RESULT, this::handleLoadStateResultMessage);
+        vertx.eventBus().consumer(Constants.ADDR_YOUTUBE_VIDEO_LOAD_RESULT, this::handleLoadVideoResultMessage);
+    }
+
+    private void handleLoadVideoResultMessage(Message<Object> message) {
+        log.info("Load video result received.");
+
+        try {
+            String json = message.body().toString();
+            log.debug("Load video result json: " + json);
+
+            Gson gson = new Gson();
+            LoadVideoRequest result = gson.fromJson(json, LoadVideoRequest.class);
+
+            if (result.getVideoProfile().getFilename() == null) {
+
+                log.info("Sending video download request for chat id: " + result.getChatId() + " url: \n" + result.getVideoProfile().getUrl());
+
+                try {
+                    DownloadVideoRequest downloadVideoRequest = new DownloadVideoRequest(result.getChatId(), result.getVideoProfile());
+                    String jsonToBeSent = gson.toJson(downloadVideoRequest);
+
+                    vertx.eventBus().send(Constants.ADDR_YOUTUBE_DOWNLOAD_VIDEO, jsonToBeSent);
+                } catch (JsonSyntaxException ex) {
+                    log.error("Error in parsing video profile json in state", ex);
+                } catch (Exception ex) {
+                    log.error("Error in sending message into event bus", ex);
+                }
+            } else {
+                String vidDir = System.getenv(Constants.VAR_VIDEO_DIR);
+                File videoFile = new File(vidDir.concat(result.getVideoProfile().getFilename()));
+
+                if (videoFile.exists() && videoFile.isFile()) {
+                    log.info("The video file found. Sending telegram video request. video file: " + result.getVideoProfile().getFilename());
+
+                    try {
+                        SendVideoRequest sendVideoRequest = new SendVideoRequest(result.getVideoProfile(), result.getChatId());
+                        
+                        String sendVideoJson = gson.toJson(sendVideoRequest);
+                        vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_AS_TELEGRAM_MESSAGE, sendVideoJson);
+                    } catch (JsonSyntaxException ex) {
+                        log.error("Error in parsing video profile json in state", ex);
+                    } catch (Exception ex) {
+                        log.error("Error in sending message into event bus", ex);
+                    }
+                } else {
+                    log.warn("The video file doesn't exist. " + result.getVideoProfile().getFilename());
+
+                    try {
+                        DownloadVideoRequest downloadVideoRequest = new DownloadVideoRequest(result.getChatId(), result.getVideoProfile());
+                        String jsonToBeSent = gson.toJson(downloadVideoRequest);
+
+                        vertx.eventBus().send(Constants.ADDR_YOUTUBE_DOWNLOAD_VIDEO, jsonToBeSent);
+                    } catch (JsonSyntaxException ex) {
+                        log.error("Error in parsing video profile json in state", ex);
+                    } catch (Exception ex) {
+                        log.error("Error in sending message into event bus", ex);
+                    }
+                }
+            }
+        } catch (NullPointerException ex) {
+            log.error(ex.getMessage(), ex);
+        }
     }
 
     private void handleLoadStateResultMessage(Message<Object> message) {
@@ -88,11 +147,28 @@ public class RestServer extends AbstractVerticle {
 
             Gson gson = new Gson();
             ChatState state = gson.fromJson(json, ChatState.class);
-            
+
             if (state.getState().equalsIgnoreCase(Constants.STATE_TELEGRAM_CHAT_SENT_YOUTUBE_LINK)) {
+                log.info("Sending video info load request for chat id: " + state.getChatId() + " url: \n" + state.getJson() + "\n");
+
+                try {
+                    String jsonVideoProfile = state.getJson();
+                    VideoProfile videoProfile = gson.fromJson(jsonVideoProfile, VideoProfile.class);
+                    LoadVideoRequest loadVideoRequest = new LoadVideoRequest(videoProfile, state.getChatId());
+
+                    String jsonToBeSent = gson.toJson(loadVideoRequest);
+
+                    vertx.eventBus().send(Constants.ADDR_YOUTUBE_VIDEO_LOAD, jsonToBeSent);
+                } catch (JsonSyntaxException ex) {
+                    log.error("Error in parsing load video request json in state", ex);
+                } catch (Exception ex) {
+                    log.error("Error in sending message into event bus", ex);
+                }
+
+                /*
+                log.info("Sending video download request for chat id: " + state.getChatId() + " url: \n" + state.getJson() + "\n");
                 
-                log.info("Sending video download for chat id: " + state.getChatId() + " url: \n" + state.getJson() + "\n");
-                                
+                
                 try {
                     String jsonVideoProfile = state.getJson();
                     VideoProfile videoProfile = gson.fromJson(jsonVideoProfile, VideoProfile.class);
@@ -105,13 +181,13 @@ public class RestServer extends AbstractVerticle {
                     log.error("Error in parsing video profile json in state", ex);
                 } catch (Exception ex) {
                     log.error("Error in sending message into event bus", ex);
-                }
+                }*/
             }
         } catch (NullPointerException ex) {
             log.error(ex.getMessage(), ex);
         }
     }
-    
+
     private void handleHook(RoutingContext routingContext) {
         log.info("Hook request..." + routingContext.request().path() + " method: " + routingContext.request().method().name());
         //JsonObject updateJson = routingContext.getBodyAsJson();
@@ -144,6 +220,7 @@ public class RestServer extends AbstractVerticle {
 
                 ChatState stateRequest = new ChatState(update.message().chat().id());
                 String jsonRequest = gson.toJson(stateRequest);
+
                 try {
                     vertx.eventBus().send(Constants.ADDR_LOAD_TELEGRAM_CHAT_STATE, jsonRequest);
                 } catch (Exception ex) {
@@ -178,6 +255,7 @@ public class RestServer extends AbstractVerticle {
         }
     }
 
+    /*
     private void handleGetProduct(RoutingContext routingContext) {
         String productID = routingContext.request().getParam("productID");
         HttpServerResponse response = routingContext.response();
@@ -213,22 +291,16 @@ public class RestServer extends AbstractVerticle {
         JsonArray arr = new JsonArray();
         products.forEach((k, v) -> arr.add(v));
         routingContext.response().putHeader("content-type", "application/json").end(arr.encodePrettily());
-    }
+    }*/
 
     private void sendError(int statusCode, HttpServerResponse response) {
         response.setStatusCode(statusCode).end();
     }
 
-    @Deprecated
-    private void setUpInitialData() {
-        addProduct(new JsonObject().put("id", "prod3568").put("name", "Egg Whisk").put("price", 3.99).put("weight", 150));
-        addProduct(new JsonObject().put("id", "prod7340").put("name", "Tea Cosy").put("price", 5.99).put("weight", 100));
-        addProduct(new JsonObject().put("id", "prod8643").put("name", "Spatula").put("price", 1.00).put("weight", 80));
-    }
-
+    /*
     private void addProduct(JsonObject product) {
         products.put(product.getString("id"), product);
-    }
+    }*/
 
     private String getKeyStorePassword() {
         return "13621215";
