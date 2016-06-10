@@ -193,7 +193,8 @@ public class RestServer extends AbstractVerticle {
     private void handleHook(RoutingContext routingContext) {
         log.info("Hook request..." + routingContext.request().path() + " method: " + routingContext.request().method().name());
         //JsonObject updateJson = routingContext.getBodyAsJson();
-        String json = routingContext.getBodyAsString();
+        String json = routingContext.getBodyAsString("UTF-8");
+        
 
         try {
             vertx.eventBus().send(Constants.ADDR_LOG_ACCESS, json);
@@ -206,7 +207,7 @@ public class RestServer extends AbstractVerticle {
         Gson gson = new Gson();
         Update update = gson.fromJson(json, Update.class);
 
-        log.debug("update: " + update);
+        log.info("update: " + update);
 
         if (update.message() != null && update.message().text() != null) {
             if (Utils.isYouTubeLink(update.message().text())) {
