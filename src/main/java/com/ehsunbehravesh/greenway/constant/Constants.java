@@ -33,5 +33,6 @@ public class Constants {
     public static final String CMD_DOWNLOAD = "Download";
     
     public static final String VAR_VIDEO_DIR = "GREENWAY_VIDEO_DIR";
+    public static final long USER_ID_EHSUN7B = 110303802;
     
 }

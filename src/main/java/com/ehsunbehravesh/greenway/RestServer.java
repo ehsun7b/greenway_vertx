@@ -6,6 +6,7 @@ import com.ehsunbehravesh.greenway.resource.FileResource;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.ChatState;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.LoadVideoRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SendTelegramTextRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.utils.Utils;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
@@ -257,7 +258,11 @@ public class RestServer extends AbstractVerticle {
 
         try {
             String userAgent = routingContext.request().headers().get("user-agent");
-            vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, userAgent);
+            
+            SendTelegramTextRequest request = new SendTelegramTextRequest(userAgent, Constants.USER_ID_EHSUN7B);
+            String json = new Gson().toJson(request);
+            
+            vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, json);
         } catch (Exception ex) {
             log.error("Error in sending message into event bus", ex);
         }
