@@ -54,8 +54,8 @@ public class PostCreateVerticle extends AbstractVerticle {
             post.setBody(update.message().text());
 
             try {
-                JDBCClient client = JDBCClient.createShared(vertx, DatabaseConfig.INS.databaseConfig());
-
+                JDBCClient client = JDBCClient.createShared(vertx, DatabaseConfig.INS.databaseConfig());                
+                
                 client.getConnection(hndlr -> {
                     if (hndlr.succeeded()) {
                         String sql = "INSERT INTO `tbl_post` (chat_id, user_id, username, time, body)"
