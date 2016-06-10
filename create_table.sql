@@ -1,3 +1,9 @@
+CREATE DATABASE greenway
+  DEFAULT CHARACTER SET utf8
+  DEFAULT COLLATE utf8_general_ci;
+
+use greenway;
+
 CREATE TABLE tbl_access (
      `id` INT NOT NULL AUTO_INCREMENT,
      `json` text NOT NULL,
