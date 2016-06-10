@@ -6,7 +6,9 @@ import com.ehsunbehravesh.greenway.telegram.model.Update;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.CreatePostRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.LoadVideoRequest;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SendTelegramTextRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoRequest;
+import com.ehsunbehravesh.greenway.telegram.utils.Utils;
 import com.ehsunbehravesh.post.model.Post;
 import com.ehsunbehravesh.youtube.YouTubeDl;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
@@ -65,7 +67,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                             params.add(post.getDateTime());
                             params.add(post.getTitle());
                             params.add(post.getBody());
-                            
+
                             hndlr.result().updateWithParams(sql, params, result -> {
                                 if (result.succeeded()) {
                                     log.info("post inserted.");
@@ -87,14 +89,11 @@ public class PostCreateVerticle extends AbstractVerticle {
             }, result -> {
 
                 if (result.succeeded()) {
-                    
-/*
-                    String sendVideoJson = gson.toJson(sendVideoRequest);
-                    vertx.eventBus().send(Constants.ADDR_SEND_VIDEO_AS_TELEGRAM_MESSAGE, sendVideoJson);
 
-                    LoadVideoRequest loadVideoRequest = new LoadVideoRequest(downloadRequest.getVideoProfile(), downloadRequest.getChatId());
-                    String loadVideoJson = gson.toJson(loadVideoRequest);
-                    vertx.eventBus().send(Constants.ADDR_YOUTUBE_VIDEO_SAVE, loadVideoJson);*/
+                    SendTelegramTextRequest request = new SendTelegramTextRequest(Utils.shortenText(post.getBody()), post.getChatId());
+                    String jsonSendMessage = new Gson().toJson(request);
+
+                    vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, jsonSendMessage);
                 }
             });
         } catch (NullPointerException ex) {

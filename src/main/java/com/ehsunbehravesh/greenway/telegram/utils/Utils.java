@@ -14,9 +14,9 @@ import java.util.regex.Pattern;
 public class Utils {
 
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
-    
+
     private static final int MIN_LENGTH_OF_LONG_TEXT = 10;
-    
+
     public static boolean isYouTubeLink(String text) {
         if (text != null && text.trim().length() > 10) {
             text = text.trim();
@@ -25,17 +25,17 @@ public class Utils {
 
             Pattern compiledPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
             Matcher matcher = compiledPattern.matcher(text);
-            
+
             return matcher.matches();
         }
 
         return false;
-    }    
-    
+    }
+
     public static boolean isDownloadCommand(String text) {
         if (text != null && text.trim().length() > 0) {
-            if (text.equalsIgnoreCase(Constants.CMD_DOWNLOAD) ||
-                    text.equalsIgnoreCase(Constants.CMD_DOWNLOAD.concat(GreenWayBot.BOT_TAG))) {
+            if (text.equalsIgnoreCase(Constants.CMD_DOWNLOAD)
+                    || text.equalsIgnoreCase(Constants.CMD_DOWNLOAD.concat(GreenWayBot.BOT_TAG))) {
                 return true;
             }
         }
@@ -50,4 +50,17 @@ public class Utils {
 
         return false;
     }
+
+    public static String shortenText(String body) {
+        return truncate(body, 50);
+    }
+
+    public static String truncate(final String content, final int lastIndex) {
+        String result = content.substring(0, lastIndex);
+        if (content.charAt(lastIndex) != ' ') {
+            result = result.substring(0, result.lastIndexOf(" "));
+        }
+        return result;
+    }
+
 }
