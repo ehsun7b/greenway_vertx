@@ -72,7 +72,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                             if (result.succeeded()) {
                                 log.info("post inserted.");
                                 log.info("Post about to be sent to author.");
-                                SendTelegramTextRequest request = new SendTelegramTextRequest("sd sdhf sdhjf sdf" + Utils.shortenText(post.getBody()), post.getChatId());
+                                SendTelegramTextRequest request = new SendTelegramTextRequest("Hello :)", post.getChatId());
                                 String jsonSendMessage = new Gson().toJson(request);                                
                                 vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, jsonSendMessage);
                             } else {
