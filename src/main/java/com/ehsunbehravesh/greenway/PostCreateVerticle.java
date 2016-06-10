@@ -51,7 +51,7 @@ public class PostCreateVerticle extends AbstractVerticle {
             post.setUserId(update.message().from().id());
             post.setUsername(update.message().from().username());
             post.setDateTime(ZonedDateTime.now());
-            post.setBody(update.message().text());
+            post.setBody("چه خبرا؟ ت، چه کار میکنی؟"/*update.message().text()*/);
 
             try {
                 JDBCClient client = JDBCClient.createShared(vertx, DatabaseConfig.INS.databaseConfig());                
@@ -66,7 +66,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                         params.add(post.getUsername());
                         params.add(Timestamp.from(post.getDateTime().toInstant()).toString());                        
                         //params.add(post.getTitle());
-                        params.add("سلام خوبی؟"/*post.getBody()*/);                        
+                        params.add(post.getBody());                        
 
                         hndlr.result().updateWithParams(sql, params, result -> {
                             if (result.succeeded()) {
