@@ -59,7 +59,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                 client.getConnection(hndlr -> {
                     if (hndlr.succeeded()) {
                         String sql = "INSERT INTO `tbl_post` (chat_id, user_id, username, time, body)"
-                                + " VALUES (?, ?, ?, ?, ?, ?)";
+                                + " VALUES (?, ?, ?, ?, ?)";
                         JsonArray params = new JsonArray();
                         params.add(post.getChatId());
                         params.add(post.getUserId());
