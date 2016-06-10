@@ -91,13 +91,13 @@ public class PostCreateVerticle extends AbstractVerticle {
             }, result -> {
 
                 if (result.succeeded()) {
-
-                    SendTelegramTextRequest request = new SendTelegramTextRequest(Utils.shortenText(post.getBody()), post.getChatId());
+                    log.info("Post about to be sent to author.");
+                    /*SendTelegramTextRequest request = new SendTelegramTextRequest(Utils.shortenText(post.getBody()), post.getChatId());
                     String jsonSendMessage = new Gson().toJson(request);
                     
                     log.debug("\n\n\n" + jsonSendMessage + "\n\n\n");
 
-                    vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, jsonSendMessage);
+                    vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, jsonSendMessage);*/
                 }
             });
         } catch (NullPointerException ex) {
