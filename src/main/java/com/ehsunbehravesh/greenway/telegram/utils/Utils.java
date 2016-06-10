@@ -15,7 +15,7 @@ public class Utils {
 
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
-    private static final int MIN_LENGTH_OF_LONG_TEXT = 10;
+    private static final int MIN_LENGTH_OF_LONG_TEXT = 100;
 
     public static boolean isYouTubeLink(String text) {
         if (text != null && text.trim().length() > 10) {
