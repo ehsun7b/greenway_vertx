@@ -20,6 +20,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.jdbc.JDBCClient;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
@@ -64,7 +65,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                             params.add(post.getChatId());
                             params.add(post.getUserId());
                             params.add(post.getUsername());
-                            params.add(post.getDateTime());
+                            params.add(Timestamp.valueOf(post.getDateTime()));
                             params.add(post.getTitle());
                             params.add(post.getBody());
 
