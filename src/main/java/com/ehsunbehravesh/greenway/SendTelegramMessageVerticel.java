@@ -40,7 +40,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                 messageToSend.setText(request.getBody());
 
                 json = gson.toJson(messageToSend, MessageToSend.class);
-                log.debug(json);
+                log.info(json);
                 vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API + Constants.URL_SEND_MESSAGE, resp -> {
                     log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
                     resp.bodyHandler(body -> log.info("Got data " + body.toString("UTF-8")));
