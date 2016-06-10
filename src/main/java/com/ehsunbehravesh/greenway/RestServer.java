@@ -192,9 +192,10 @@ public class RestServer extends AbstractVerticle {
 
     private void handleHook(RoutingContext routingContext) {
         log.info("Hook request..." + routingContext.request().path() + " method: " + routingContext.request().method().name());
-        //JsonObject updateJson = routingContext.getBodyAsJson();
+        JsonObject updateJson = routingContext.getBodyAsJson();
         String json = routingContext.getBodyAsString("UTF-8");
         
+        System.out.println("\n\n\njson: " + updateJson.toString());
 
         try {
             vertx.eventBus().send(Constants.ADDR_LOG_ACCESS, json);
