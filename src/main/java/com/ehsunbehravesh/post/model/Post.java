@@ -2,6 +2,7 @@ package com.ehsunbehravesh.post.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  *
@@ -13,7 +14,7 @@ public class Post implements Serializable {
     protected final Long chatId;
     protected Integer userId;
     protected String username;
-    protected LocalDateTime dateTime;
+    protected ZonedDateTime dateTime;
     protected String title;
     protected String body;
 
@@ -50,13 +51,14 @@ public class Post implements Serializable {
         this.username = username;
     }
 
-    public LocalDateTime getDateTime() {
+    public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
+
 
     public String getTitle() {
         return title;

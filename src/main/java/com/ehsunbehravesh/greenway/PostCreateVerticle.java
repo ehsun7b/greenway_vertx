@@ -22,6 +22,7 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.jdbc.JDBCClient;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  *
@@ -49,7 +50,7 @@ public class PostCreateVerticle extends AbstractVerticle {
             Post post = new Post(update.message().chat().id());
             post.setUserId(update.message().from().id());
             post.setUsername(update.message().from().username());
-            post.setDateTime(LocalDateTime.now());
+            post.setDateTime(ZonedDateTime.now());
             post.setBody(update.message().text());
 
             vertx.executeBlocking(future -> {
@@ -65,7 +66,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                             params.add(post.getChatId());
                             params.add(post.getUserId());
                             params.add(post.getUsername());
-                            params.add(Timestamp.valueOf(post.getDateTime()));
+                            params.add(post.getDateTime());
                             params.add(post.getTitle());
                             params.add(post.getBody());
 
