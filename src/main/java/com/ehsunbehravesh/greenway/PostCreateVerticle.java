@@ -72,6 +72,7 @@ public class PostCreateVerticle extends AbstractVerticle {
 
                             hndlr.result().updateWithParams(sql, params, result -> {
                                 if (result.succeeded()) {
+                                    future.complete();
                                     log.info("post inserted.");
                                 } else {
                                     log.info("post insert failed.", result.cause());
@@ -80,9 +81,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                         } else {
                             log.error(hndlr.cause().getMessage());
                         }
-                    });
-
-                    future.complete();
+                    });                    
                 } catch (Exception ex) {
                     log.error("Error in inserting post, ".concat(post.toString()), ex);
                     future.fail(ex);
