@@ -69,7 +69,9 @@ public class PostCreateVerticle extends AbstractVerticle {
                             params.add(Timestamp.from(post.getDateTime().toInstant()).toString());
                             params.add(post.getTitle());
                             params.add(post.getBody());
-
+                            
+                            log.info("body: " + post.getBody());
+                            
                             hndlr.result().updateWithParams(sql, params, result -> {
                                 if (result.succeeded()) {
                                     future.complete();
