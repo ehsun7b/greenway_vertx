@@ -11,7 +11,7 @@ public enum DatabaseConfig {
 
     public JsonObject databaseConfig() {
         JsonObject config = new JsonObject();
-        config.put("url", "jdbc:mysql://localhost:3306/greenway?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false");
+        config.put("url", "jdbc:mysql://localhost:3306/greenway?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false");
         config.put("user", "root");
         config.put("password", "13621215ShahiShima");
         config.put("driver_class", "com.mysql.jdbc.Driver");
