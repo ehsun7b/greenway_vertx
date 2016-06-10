@@ -15,6 +15,8 @@ public class Utils {
 
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
     
+    private static final int MIN_LENGTH_OF_LONG_TEXT = 10;
+    
     public static boolean isYouTubeLink(String text) {
         if (text != null && text.trim().length() > 10) {
             text = text.trim();
@@ -36,6 +38,14 @@ public class Utils {
                     text.equalsIgnoreCase(Constants.CMD_DOWNLOAD.concat(GreenWayBot.BOT_TAG))) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public static boolean isLongText(String text) {
+        if (text != null && text.trim().length() > MIN_LENGTH_OF_LONG_TEXT) {
+            return true;
         }
 
         return false;

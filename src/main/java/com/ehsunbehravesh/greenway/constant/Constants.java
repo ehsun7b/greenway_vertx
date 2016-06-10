@@ -19,6 +19,7 @@ public class Constants {
     public static final String ADDR_YOUTUBE_VIDEO_LOAD_RESULT = "com.ehsunbehravesh.greenway.address.youtube.video.load.result";
     public static final String ADDR_YOUTUBE_VIDEO_SAVE = "com.ehsunbehravesh.greenway.address.youtube.video.save";
     public static final String ADDR_YOUTUBE_VIDEO_UPDATE_FILE_ID = "com.ehsunbehravesh.greenway.address.youtube.video.update.fileId";
+    public static final String ADDR_CREATE_POST = "com.ehsunbehravesh.greenway.address.post.create";
     
     public static final String HOST_API = "api.telegram.org";
     
@@ -32,4 +33,5 @@ public class Constants {
     public static final String CMD_DOWNLOAD = "Download";
     
     public static final String VAR_VIDEO_DIR = "GREENWAY_VIDEO_DIR";
+    
 }

@@ -8,6 +8,7 @@ import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.LoadVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.utils.Utils;
+import com.ehsunbehravesh.youtube.model.Post;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -131,7 +132,7 @@ public class RestServer extends AbstractVerticle {
                     } catch (Exception ex) {
                         log.error("Error in sending message into event bus", ex);
                     }
-                }
+                } 
             }
         } catch (NullPointerException ex) {
             log.error(ex.getMessage(), ex);
@@ -223,6 +224,14 @@ public class RestServer extends AbstractVerticle {
 
                 try {
                     vertx.eventBus().send(Constants.ADDR_LOAD_TELEGRAM_CHAT_STATE, jsonRequest);
+                } catch (Exception ex) {
+                    log.error("Error in sending message into event bus", ex);
+                }
+            } else if (Utils.isLongText(update.message().text())) {
+                log.info("Long text received: " + update.message().text());
+                
+                try {
+                    vertx.eventBus().send(Constants.ADDR_CREATE_POST, json);
                 } catch (Exception ex) {
                     log.error("Error in sending message into event bus", ex);
                 }

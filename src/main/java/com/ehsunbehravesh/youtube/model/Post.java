@@ -10,11 +10,17 @@ import java.time.LocalDateTime;
 public class Post implements Serializable {
     
     protected Long id;
-    protected Long userId;
+    protected final Long chatId;
+    protected Integer userId;
+    protected String username;
     protected LocalDateTime dateTime;
     protected String title;
     protected String body;
 
+    public Post(Long chatId) {
+        this.chatId = chatId;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -23,12 +29,20 @@ public class Post implements Serializable {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public LocalDateTime getDateTime() {
