@@ -28,7 +28,7 @@ CREATE TABLE tbl_post (
     `chat_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `username` VARCHAR(255),
-    `time` timestamp NOT NULL,
+    `time` INT NOT NULL,
     `title` VARCHAR(255),
     `body` LONGTEXT,
     primary key (id)  
