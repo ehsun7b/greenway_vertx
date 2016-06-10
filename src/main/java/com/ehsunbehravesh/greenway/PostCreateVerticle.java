@@ -66,7 +66,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                             params.add(post.getChatId());
                             params.add(post.getUserId());
                             params.add(post.getUsername());
-                            params.add(post.getDateTime());
+                            params.add(Timestamp.from(post.getDateTime().toInstant()));
                             params.add(post.getTitle());
                             params.add(post.getBody());
 
