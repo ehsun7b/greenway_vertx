@@ -1,7 +1,6 @@
 package com.ehsunbehravesh.greenway.telegram.model.request.x;
 
 import com.ehsunbehravesh.greenway.telegram.model.request.Keyboard;
-import com.ehsunbehravesh.greenway.telegram.model.request.ReplyKeyboardMarkup;
 
 /**
  *

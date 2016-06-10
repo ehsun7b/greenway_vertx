@@ -1,4 +1,4 @@
-package com.ehsunbehravesh.youtube.model;
+package com.ehsunbehravesh.post.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -17,6 +17,11 @@ public class Post implements Serializable {
     protected String title;
     protected String body;
 
+    @Override
+    public String toString() {
+        return "Post{" + "id=" + id + ", chatId=" + chatId + ", userId=" + userId + ", username=" + username + ", dateTime=" + dateTime + ", title=" + title + ", body=" + body + '}';
+    }
+    
     public Post(Long chatId) {
         this.chatId = chatId;
     }
@@ -68,6 +73,8 @@ public class Post implements Serializable {
     public void setBody(String body) {
         this.body = body;
     }
-    
-    
+
+    public Long getChatId() {
+        return chatId;
+    }
 }

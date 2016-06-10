@@ -6,6 +6,7 @@ import com.ehsunbehravesh.greenway.telegram.model.request.ReplyKeyboardMarkup;
 import com.ehsunbehravesh.greenway.telegram.model.request.x.MessageToSend;
 import com.ehsunbehravesh.greenway.telegram.model.request.x.VideoToSend;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.ChatState;
+import com.ehsunbehravesh.greenway.telegram.model.vertx.SendTelegramTextRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoProfileRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoRequest;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
@@ -31,13 +32,25 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
         vertx.eventBus().consumer(Constants.ADDR_SEND_TELEGRAM_MESSAGE, message -> {
 
             if (message != null && message.body() != null) {
-                String text = message.body().toString();
-                String apiUrl = "/bot196469941:AAH3ZYKro3NyJadh3N8IBhWsI6SAlfvh75I/sendMessage?chat_id=110303802&text=" + text;
+                String json = message.body().toString();
+                Gson gson = new Gson();
+                SendTelegramTextRequest request = gson.fromJson(json, SendTelegramTextRequest.class);
 
-                vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).getNow(443, "api.telegram.org", apiUrl, resp -> {
-                    System.out.println("Got response " + resp.statusCode());
-                    resp.bodyHandler(body -> System.out.println("Got data " + body.toString("UTF-8")));
-                });
+                MessageToSend messageToSend = new MessageToSend(request.getChatId());
+                messageToSend.setText(request.getBody());
+
+                json = gson.toJson(messageToSend, MessageToSend.class);
+                log.debug(json);
+                vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API + Constants.URL_SEND_MESSAGE, resp -> {
+                    log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
+                    resp.bodyHandler(body -> log.info("Got data " + body.toString("UTF-8")));
+
+                    if (resp.statusCode() == 200) {
+                        log.info("Message sent successfully. " + request.getBody());
+                    }
+                }).putHeader(HttpHeaders.CONTENT_LENGTH, json.length() + "")
+                        .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                        .write(json).end();
             }
         });
 
@@ -64,7 +77,7 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
             messageToSend.setReply_to_message_id(request.getUpdate().message().messageId());
 
             json = gson.toJson(messageToSend, MessageToSend.class);
-            System.out.println(json);
+            log.debug(json);
             vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API + Constants.URL_SEND_MESSAGE, resp -> {
                 log.info("Response from " + Constants.URL_SEND_MESSAGE + " :" + resp.statusCode());
                 resp.bodyHandler(body -> log.info("Got data " + body.toString("UTF-8")));
@@ -100,13 +113,13 @@ public class SendTelegramMessageVerticel extends AbstractVerticle {
                 log.info("Sending video with file ID: " + videoProfile.getId());
                 VideoToSend videoToSend = new VideoToSend(chatId, videoProfile.getId());
                 String jsonToSend = gson.toJson(videoToSend);
-            
+
                 vertx.createHttpClient(new HttpClientOptions().setSsl(true).setTrustAll(true)).post(443, Constants.HOST_API, Constants.URL_API + Constants.URL_SEND_VIDEO, resp -> {
                     log.info("Response from " + Constants.URL_SEND_VIDEO + " :" + resp.statusCode());
                     resp.bodyHandler(body -> log.info("Got data " + body.toString("UTF-8")));
 
                     if (resp.statusCode() == 200) {
-                        
+
                     }
                 }).putHeader(HttpHeaders.CONTENT_LENGTH, jsonToSend.length() + "")
                         .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")

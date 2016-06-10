@@ -22,3 +22,14 @@ CREATE TABLE tbl_youtube_video (
      `time` timestamp NOT NULL,
      primary key (id)
 );
+
+CREATE TABLE tbl_post (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `chat_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `username` VARCHAR(255),
+    `time` timestamp NOT NULL,
+    `title` VARCHAR(255),
+    `body` LONGTEXT,
+    primary key (id)  
+);

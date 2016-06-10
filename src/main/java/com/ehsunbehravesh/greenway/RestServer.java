@@ -8,7 +8,6 @@ import com.ehsunbehravesh.greenway.telegram.model.vertx.DownloadVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.LoadVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.model.vertx.SendVideoRequest;
 import com.ehsunbehravesh.greenway.telegram.utils.Utils;
-import com.ehsunbehravesh.youtube.model.Post;
 import com.ehsunbehravesh.youtube.model.VideoProfile;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
