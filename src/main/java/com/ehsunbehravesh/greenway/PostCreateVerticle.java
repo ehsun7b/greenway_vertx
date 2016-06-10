@@ -42,7 +42,7 @@ public class PostCreateVerticle extends AbstractVerticle {
 
         try {
             String json = message.body().toString();
-            log.debug("Post create request json: " + json);
+            log.info("Post create request json: " + json);
 
             Gson gson = new Gson();
             Update update = gson.fromJson(json, Update.class);
@@ -95,7 +95,7 @@ public class PostCreateVerticle extends AbstractVerticle {
                     SendTelegramTextRequest request = new SendTelegramTextRequest(Utils.shortenText(post.getBody()), post.getChatId());
                     String jsonSendMessage = new Gson().toJson(request);
                     
-                    System.out.println("\n\n\n" + jsonSendMessage + "\n\n\n");
+                    log.debug("\n\n\n" + jsonSendMessage + "\n\n\n");
 
                     vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, jsonSendMessage);
                 }
