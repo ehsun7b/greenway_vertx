@@ -45,8 +45,8 @@ public class RestServer extends AbstractVerticle {
     @Override
     public void start() {
         vertx.deployVerticle(new SendTelegramMessageVerticel());
-        //vertx.deployVerticle(new YouTubeGetInfoVerticle());
-        //vertx.deployVerticle(new YouTubeDownloadVideoVerticle());
+        vertx.deployVerticle(new YouTubeGetInfoVerticle());
+        vertx.deployVerticle(new YouTubeDownloadVideoVerticle());
         vertx.deployVerticle(new AccessLogVerticle());
         vertx.deployVerticle(new TelegramChatStateVerticle());
 
