@@ -53,54 +53,42 @@ public class PostCreateVerticle extends AbstractVerticle {
             post.setDateTime(ZonedDateTime.now());
             post.setBody(update.message().text());
 
-            vertx.executeBlocking(future -> {
+            try {
+                JDBCClient client = JDBCClient.createShared(vertx, DatabaseConfig.INS.databaseConfig());
 
-                try {
-                    JDBCClient client = JDBCClient.createShared(vertx, DatabaseConfig.INS.databaseConfig());
+                client.getConnection(hndlr -> {
+                    if (hndlr.succeeded()) {
+                        String sql = "INSERT INTO `tbl_post` (chat_id, user_id, username, time, title, body)"
+                                + " VALUES (?, ?, ?, ?, ?, ?)";
+                        JsonArray params = new JsonArray();
+                        params.add(post.getChatId());
+                        params.add(post.getUserId());
+                        params.add(post.getUsername());
+                        params.add(Timestamp.from(post.getDateTime().toInstant()).toString());
+                        params.add(post.getTitle());
+                        params.add(post.getBody());
 
-                    client.getConnection(hndlr -> {
-                        if (hndlr.succeeded()) {
-                            String sql = "INSERT INTO `tbl_post` (chat_id, user_id, username, time, title, body)"
-                                    + " VALUES (?, ?, ?, ?, ?, ?)";
-                            JsonArray params = new JsonArray();
-                            params.add(post.getChatId());
-                            params.add(post.getUserId());
-                            params.add(post.getUsername());
-                            params.add(Timestamp.from(post.getDateTime().toInstant()).toString());
-                            params.add(post.getTitle());
-                            params.add(post.getBody());
-                            
-                            log.info("body: " + post.getBody());
-                            
-                            hndlr.result().updateWithParams(sql, params, result -> {
-                                if (result.succeeded()) {
-                                    future.complete();
-                                    log.info("post inserted.");
-                                } else {
-                                    log.info("post insert failed.", result.cause());
-                                }
-                            });
-                        } else {
-                            log.error(hndlr.cause().getMessage());
-                        }
-                    });                    
-                } catch (Exception ex) {
-                    log.error("Error in inserting post, ".concat(post.toString()), ex);
-                    future.fail(ex);
-                }
+                        log.info("body: " + post.getBody());
 
-            }, result -> {
+                        hndlr.result().updateWithParams(sql, params, result -> {
+                            if (result.succeeded()) {
+                                log.info("post inserted.");
+                                log.info("Post about to be sent to author.");
+                                SendTelegramTextRequest request = new SendTelegramTextRequest(Utils.shortenText(post.getBody()), post.getChatId());
+                                String jsonSendMessage = new Gson().toJson(request);                                
+                                vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, jsonSendMessage);
+                            } else {
+                                log.info("post insert failed.", result.cause());
+                            }
+                        });
+                    } else {
+                        log.error(hndlr.cause().getMessage());
+                    }
+                });
+            } catch (Exception ex) {
+                log.error("Error in inserting post, ".concat(post.toString()), ex);
+            }
 
-                if (result.succeeded()) {
-                    log.info("Post about to be sent to author.");
-                    /*SendTelegramTextRequest request = new SendTelegramTextRequest(Utils.shortenText(post.getBody()), post.getChatId());
-                    String jsonSendMessage = new Gson().toJson(request);
-                    
-                    log.debug("\n\n\n" + jsonSendMessage + "\n\n\n");
-
-                    vertx.eventBus().send(Constants.ADDR_SEND_TELEGRAM_MESSAGE, jsonSendMessage);*/
-                }
-            });
         } catch (NullPointerException ex) {
             log.error(ex.getMessage(), ex);
         }
