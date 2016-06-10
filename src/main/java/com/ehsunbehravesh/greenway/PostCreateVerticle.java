@@ -51,7 +51,7 @@ public class PostCreateVerticle extends AbstractVerticle {
             post.setUserId(update.message().from().id());
             post.setUsername(update.message().from().username());
             post.setDateTime(ZonedDateTime.now());
-            post.setBody("چه خبرا؟ ت، چه کار میکنی؟"/*update.message().text()*/);
+            post.setBody(update.message().text());
 
             try {
                 JDBCClient client = JDBCClient.createShared(vertx, DatabaseConfig.INS.databaseConfig());                
